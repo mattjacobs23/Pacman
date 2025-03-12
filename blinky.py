@@ -1,0 +1,52 @@
+import pygame
+import math
+from settings import *
+from enemy_class import Enemy
+
+vec = pygame.math.Vector2
+
+
+class Blinky(Enemy):
+    def __init__(self, app, pos, player, img):
+        super().__init__(app, pos)
+        self.color = (255, 0, 0)
+        self.direction = vec(1, 0)
+        self.player = player
+        self.img = pygame.transform.scale(img, (CELL_WIDTH, CELL_HEIGHT))
+
+
+
+    def update(self):
+        # Move
+        self.pix_pos += self.direction * self.speed
+
+        # Find the next direction to move
+        next_dir = self.find_next_direction(self.player.grid_pos)
+
+        if self.time_to_move():
+            self.direction = vec(next_dir[0], next_dir[1])
+
+        # Setting grid position in reference to pix position
+        self.grid_pos[0] = (self.pix_pos[0] - TOP_BOTTOM_BUFFER + CELL_WIDTH // 2) // CELL_WIDTH + 1
+        self.grid_pos[1] = (self.pix_pos[1] - TOP_BOTTOM_BUFFER + CELL_HEIGHT // 2) // CELL_HEIGHT + 1
+
+    def find_next_direction(self, player_pos):
+        # Get minimum linear distance from Blinky to Pacman for all possible tiles
+        direction_to_move = 0
+        min_distance = float("inf")
+
+        # Loop through possible directions, check if there is a wall, or ghost house gate
+        # Also, ghosts cannot turn around
+        # If that is all ok, find linear path to pacman, return minimum from all these possible tiles
+        for i, dir in enumerate(self.possible_directions):
+            next_x, next_y = int(self.grid_pos.x + dir[0]), int(self.grid_pos.y + dir[1])
+            next_tile = self.app.map[next_y][next_x]
+            if dir != self.direction * -1 and next_tile != '1' and next_tile != 'B':
+                distance = math.sqrt((next_x - player_pos.x)**2 + (next_y - player_pos.y)**2)
+                if distance < min_distance:
+                    min_distance = distance
+                    direction_to_move = i
+
+        return self.possible_directions[direction_to_move]
+
+
