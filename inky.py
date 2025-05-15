@@ -57,6 +57,12 @@ class Inky(Enemy):
             # Also, ghosts cannot turn around
             for i, dir in enumerate(self.possible_directions):
                 next_x, next_y = int(self.grid_pos.x + dir[0]), int(self.grid_pos.y + dir[1])
+                # add boundary check here
+                map_height = len(self.app.map)
+                map_width = len(self.app.map[0])
+                if not (0 <= next_x < map_width and 0 <= next_y < map_height):
+                    continue
+
                 next_tile = self.app.map[next_y][next_x]
                 if dir != self.direction * -1 and next_tile != '1' and next_tile != 'B':
                     distance = math.sqrt((next_x - target_tile.x)**2 + (next_y - target_tile.y)**2)
