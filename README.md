@@ -1,6 +1,7 @@
 # Pacman
 
 ![](imgs/in_game_screenshot.png)
+
 This is a classic recreation of the Pacman arcade game, built from scratch using Python and Pygame. The game features fully implemented gameplay mechanics including:
 
 - Player-controlled Pacman navigating a maze
